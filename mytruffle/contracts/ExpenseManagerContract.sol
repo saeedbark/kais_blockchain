@@ -4,6 +4,10 @@ pragma solidity ^0.8.19;
 contract ExpenseManagerContract {
     uint256 public balance;
 
+    constructor()  {
+            balance = 0;
+        }
+
     // Mapping to keep track of balances by account
     mapping(address => uint256) public accountsBalance;
 
