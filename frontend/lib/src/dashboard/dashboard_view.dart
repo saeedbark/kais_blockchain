@@ -1,10 +1,9 @@
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/constent/my_string.dart';
 import 'package:frontend/src/dashboard/dashboard_controller.dart';
-import 'package:frontend/src/deposit/deposit_view.dart';
 import 'package:frontend/src/deposit_details/deposit_details_view.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 class DashboardView extends StatelessWidget {
@@ -17,18 +16,37 @@ class DashboardView extends StatelessWidget {
       backgroundColor: AppColors.accent,
       appBar: AppBar(
         title: const Text('Dashboard'),
-        
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            child: TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DespoiseDetailsView(
+                    isDesposit: true,
+                    amount: 2000,
+
+                  ),
+                ),
+              ),
+              child: Text(
+                'Deposit',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+          ),
+        ],
         backgroundColor: AppColors.seconde,
-       // shadowColor: ,
-        centerTitle: true,
+        elevation: 2,
       ),
       body: controller.isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
           : Container(
-            margin: const EdgeInsets.only(top: 20),
-            child: const _DashboardDetailsView()),
+              margin: const EdgeInsets.only(top: 20),
+              child: const _DashboardDetailsView()),
     );
   }
 }
@@ -50,6 +68,19 @@ class _DashboardDetailsView extends StatelessWidget {
     "Hassan"
   ];
 
+  static const List<String> images = [
+    "https://st.depositphotos.com/1371851/1256/i/950/depositphotos_12560182-stock-photo-handsome-man-with-eyeglasses.jpg",
+    "https://st.depositphotos.com/2931363/3703/i/950/depositphotos_37034497-stock-photo-young-black-man-smiling-at.jpg",
+    "https://st.depositphotos.com/1743476/2514/i/950/depositphotos_25144755-stock-photo-presenting-your-text.jpg",
+    "https://st3.depositphotos.com/12985790/17521/i/1600/depositphotos_175218564-stock-photo-smiling-handsome-man-holding-cup.jpg",
+    "https://st5.depositphotos.com/1049680/64158/i/1600/depositphotos_641589546-stock-photo-hispanic-man-standing-blue-background.jpg",
+    "https://st4.depositphotos.com/13193658/30158/i/1600/depositphotos_301586860-stock-photo-handsome-businessman-formal-wear-smiling.jpg",
+    "https://st3.depositphotos.com/12985790/16264/i/1600/depositphotos_162644654-stock-photo-happy-african-american-man.jpg",
+    "https://st5.depositphotos.com/88369228/74460/i/1600/depositphotos_744609920-stock-photo-high-resolution-ultrarealistic-image-photograph.jpg",
+    "https://st5.depositphotos.com/62628780/73296/i/1600/depositphotos_732968602-stock-photo-happy-man-portrait-outdoor-relax.jpg",
+    "https://st.depositphotos.com/1269204/1219/i/950/depositphotos_12196477-stock-photo-smiling-men-isolated-on-the.jpg"
+  ];
+
   List<Map<String, dynamic>> _generateAccountData(BuildContext context) {
     final accounts = context.watch<DashboardController>().accounts;
 
@@ -61,7 +92,7 @@ class _DashboardDetailsView extends StatelessWidget {
           "name": names[index],
           "account": accounts[index],
           "amount": amount,
-          "percentage": amount / 5000,
+          "image": images[index],
         };
       },
     );
@@ -90,7 +121,9 @@ class AccountCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const DespoiseDetailsView(isPushFromDashboard: true,),
+          builder: (context) => DespoiseDetailsView(
+            amount: data['amount'],
+          ),
         ),
       ),
       child: Card(
@@ -100,16 +133,16 @@ class AccountCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              CircularPercentIndicator(
-                radius: 50.0,
-                lineWidth: 8.0,
-                percent: data['percentage'],
-                center: Text(
-                  "${(data['percentage'] * 100).toStringAsFixed(1)}%",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+              Container(
+                width: 80,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  image: DecorationImage(
+                    image: CachedNetworkImageProvider(data['image']),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                progressColor: AppColors.primary,
-                backgroundColor: Colors.grey[300]!,
               ),
               const SizedBox(width: 16),
               Expanded(

@@ -39,6 +39,7 @@ dependencies:
   talker_dio_logger: ^1.0.0
   percent_indicator: ^4.2.3
   provider: ^6.1.2
+  cached_network_image: ^3.2.0
 
 
 dev_dependencies:
