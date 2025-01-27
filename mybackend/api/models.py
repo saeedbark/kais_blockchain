@@ -12,9 +12,9 @@ class Transaction(models.Model):
     sender = models.CharField(max_length=42)
     recipient = models.CharField(max_length=42)
     amount = models.DecimalField(max_digits=20, decimal_places=10)
-    tx_hash = models.CharField(max_length=66)  # Transaction hash
-
-    timestamp = models.DateTimeField(auto_now_add=True)
+    tx_hash = models.CharField(max_length=66, unique=True)  # Transaction hash
+    block_number = models.IntegerField()
+    timestamp = models.DateTimeField()
 
     def __str__(self):
         return f"{self.tx_hash} ({self.amount} ETH)"

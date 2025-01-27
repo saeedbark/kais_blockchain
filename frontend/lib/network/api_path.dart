@@ -3,4 +3,5 @@ class ApiPath {
   static const String register = "register/"; 
   static const String accounts = "accounts/";
   static const String deposit = "transfer/";
+  static const String transactions = "transactions/";
 }

@@ -9,4 +9,4 @@ class AccountSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ['id', 'sender', 'recipient', 'amount', 'tx_hash', 'timestamp']
+        fields = '__all__'

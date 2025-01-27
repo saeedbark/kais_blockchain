@@ -22,11 +22,12 @@ class DashboardView extends StatelessWidget {
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DespoiseDetailsView(
-                    id: controller.accounts[0]['address'],
+                  builder: (context) => DepositDetailsView(
+                    address: controller.accounts[0]['address'],
                     isDesposit: true,
-                    amount: controller.accounts[0]['balance'],
-
+                    amount:
+                        double.tryParse(controller.accounts[0]['balance']) ??
+                            0.0,
                   ),
                 ),
               ),
@@ -119,9 +120,9 @@ class AccountCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DespoiseDetailsView(
-            amount: data['amount'],
-            percentage: data['usage_percentage'],
+          builder: (context) => DepositDetailsView(
+            amount: double.tryParse(data['amount']) ?? 0.0,
+            percentage: double.tryParse(data['usage_percentage']) ?? 0.0,
           ),
         ),
       ),
@@ -190,7 +191,8 @@ class AccountCard extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: '${data['amount'].toStringAsFixed(2)} MRU',
+                            text:
+                                '${double.tryParse(data['amount'])?.toStringAsFixed(2) ?? 0.0} MRU',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[800],

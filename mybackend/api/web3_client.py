@@ -64,7 +64,7 @@ def transfer_amount(sender, recipient, amount):
     
     print(funding_amount)
     
-    private_key =  '0xf0ddf1edcb4c528972a20ec577010831875db69473eda793df1161cf48070404'
+    private_key =  '0x81da27a6a9c292d8aa2a05876a68d6bc49a12c90c2b89c5c0f918998e3fff724'
     print('private_key', private_key)
 
     
@@ -94,5 +94,25 @@ def transfer_amount(sender, recipient, amount):
 
     return tx_hash
 
+def get_transactions_for_account(account_address):
+    account_address = web3.to_checksum_address(account_address)
+    print('Address:', account_address)
+    latest_block = web3.eth.block_number
+    print('Latest Block:', latest_block)
+    transactions = []
 
-
+    for block_num in range(latest_block + 1):
+        block = web3.eth.get_block(block_num, full_transactions=True)
+        for tx in block.transactions:
+            if tx['from'] == account_address or tx['to'] == account_address:
+                transactions.append({
+                    'hash': tx['hash'].hex(),
+                    'from': tx['from'],
+                    'to': tx['to'],
+                    'value': float(web3.from_wei(tx['value'], 'ether')),
+                    'block_number': tx['blockNumber'],
+                    'timestamp': web3.eth.get_block(tx['blockNumber'])['timestamp']
+                })
+    
+    print('Transactions:', transactions)
+    return transactions
