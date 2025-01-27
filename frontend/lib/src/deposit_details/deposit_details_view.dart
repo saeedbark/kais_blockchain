@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constent/my_string.dart';
 import 'package:frontend/src/deposit/deposit_view.dart';
+import 'package:frontend/src/deposit_details/deposit_details_controller.dart';
+import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
-class DespoiseDetailsView extends StatelessWidget {
-  final String? id;
+class DepositDetailsView extends StatelessWidget {
+  final String? address;
   final bool isDesposit;
   final double amount;
   final double percentage;
-  
 
-  const DespoiseDetailsView({
+  const DepositDetailsView({
     super.key,
-    this.id,
+    this.address,
     this.isDesposit = false,
     this.amount = 4000,
     this.percentage = 0.0,
@@ -20,228 +22,175 @@ class DespoiseDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    print(id);
-    return Scaffold(
-      backgroundColor: AppColors.accent,
-      appBar: AppBar(
-        title: Text('Deposit Details'),
-        backgroundColor: AppColors.seconde,
-        shadowColor: AppColors.primary,
-        elevation: 2,
+    return ChangeNotifierProvider(
+      create: (context) => DepositDetailsController(address ?? ''),
+      child: Scaffold(
+        backgroundColor: AppColors.accent,
+        appBar: AppBar(
+          title: const Text('Deposit Details'),
+          backgroundColor: AppColors.seconde,
+          shadowColor: AppColors.primary,
+          elevation: 2,
+        ),
+        body: _DepositDetailsViewBody(
+          address: address,
+          isDesposit: isDesposit,
+          amount: amount,
+          percentage: percentage,
+        ),
       ),
-      body: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16)
-            .copyWith(top: 80),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    CircularPercentIndicator(
-                      radius: 40.0,
-                      lineWidth: 8.0,
-                      percent: percentage / 100,
-                      center: Text(
-                        "${percentage.toStringAsFixed(1)} %",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      progressColor: AppColors.primary,
-                      backgroundColor: Colors.grey[300]!,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(width: 12),
-                        Text(
-                          '${amount.toStringAsFixed(2)} MRU',
-                          style: TextStyle(
-                              fontSize: 50, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+    );
+  }
+}
+
+class _DepositDetailsViewBody extends StatelessWidget {
+  final String? address;
+  final bool isDesposit;
+  final double amount;
+  final double percentage;
+
+  const _DepositDetailsViewBody({
+    this.address,
+    this.isDesposit = false,
+    this.amount = 4000,
+    this.percentage = 0.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Provider.of<DepositDetailsController>(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(top: 20),
+      child: Column(
+        children: [
+          // Circular Percent Indicator
+          CircularPercentIndicator(
+            radius: 40.0,
+            lineWidth: 8.0,
+            percent: percentage / 100,
+            center: Text(
+              "${percentage.toStringAsFixed(1)} %",
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            if (isDesposit) ...[
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>  DepositView(
-                            address: id??'',
-                          ),
-                        ),
-                      ),
-                      child: Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: AppColors.primary,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            '+ DEPOSIT',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+            progressColor: AppColors.primary,
+            backgroundColor: Colors.grey[300]!,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(width: 12),
+              Text(
+                '${amount.toStringAsFixed(2)} MRU',
+                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
               ),
             ],
-            const SizedBox(height: 20),
-            const Text(
-              'Transactions',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+
+          if (isDesposit) ...[
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DepositView(
+                          address: address ?? '',
+                        ),
+                      ),
+                    ),
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: AppColors.primary,
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '+ DEPOSIT',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: ListView(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white,
-                    ),
-                    margin: EdgeInsets.only(bottom: 16),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '1000 MRU',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '2025-01-08 09:43:24',
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 4),
-                        const Text(
-                          '0x179a282Ca6c4C8FBFF0e467C889896322AD6E1cad',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white,
-                    ),
-                    margin: EdgeInsets.only(bottom: 16),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '2000 MRU',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '2025-01-07 11:43:24',
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 4),
-                        const Text(
-                          '0x179a282Ca6c4C8FBFF0e467C889896322AD6E1Ba',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white,
-                    ),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '3000 MRU',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '2025-01-06 10:55:24',
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 4),
-                        const Text(
-                          '0x179a282Ca6c4C8FBFF0e467C889896322AD6Earb',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+          ],
+          const SizedBox(height: 20),
+          const Text(
+            'Transactions',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+
+          // Divider
+          const Divider(height: 1, thickness: 2, color: Colors.grey),
+
+          // Loading or Error State
+          if (controller.isLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
               ),
             )
-          ],
-        ),
+          else if (controller.errorMessage != null)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  controller.errorMessage ?? 'Error',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            )
+          else
+            // List of Transactions
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(top: 8),
+                itemCount: controller.transactions.length,
+                itemBuilder: (context, index) {
+                  final transaction = controller.transactions[index];
+
+                  // Format the timestamp
+                  final formattedDate =
+                      DateFormat('yyyy-MM-dd').format(transaction.timestamp);
+                  final formattedTime =
+                      DateFormat('HH:mm:ss').format(transaction.timestamp);
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    elevation: 2,
+                    child: ListTile(
+                      leading: const Icon(Icons.account_balance_wallet),
+                      title: Text(
+                        'Amount: ${transaction.amount.toStringAsFixed(2)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Tx Hash: ${transaction.txHash}'),
+                          Text('Block Number: ${transaction.blockNumber}'),
+                          Text(
+                            'Date: $formattedDate $formattedTime',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
       ),
     );
   }
