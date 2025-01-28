@@ -125,7 +125,7 @@ class _DepositDetailsViewBody extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 20),
-          const Text(
+          const Text( 
             'Transactions',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
