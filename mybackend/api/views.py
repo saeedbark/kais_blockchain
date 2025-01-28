@@ -3,11 +3,57 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .models import Account, Transaction
-from .serializers import AccountSerializer, TransactionSerializer
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from .serializers import AccountSerializer, TransactionSerializer,UserProfile,UserSerializer
 from .web3_client import get_all_accounts_with_balances, transfer_amount,get_transactions_for_account,web3
 from django.utils import timezone
 import datetime
 
+
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            # Find available Ganache address
+            used_addresses = UserProfile.objects.values_list('eth_address', flat=True)
+            available_addresses = [addr for addr in web3.eth.accounts if addr not in used_addresses]
+            
+            if not available_addresses:
+                return Response({"error": "No available addresses"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Create user
+            user = serializer.save()
+            
+            # Assign first available address
+            UserProfile.objects.create(
+                user=user,
+                eth_address=available_addresses[0],
+                balance=0
+            )
+            
+            return Response({
+                "message": "User created successfully",
+                "eth_address": available_addresses[0]
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        user = authenticate(username=username, password=password)
+        if user:
+            token, created = Token.objects.get_or_create(user=user)
+            profile = UserProfile.objects.get(user=user)
+            return Response({
+                'token': token.key,
+                'eth_address': profile.eth_address,
+                'balance': profile.balance
+            })
+        return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class AccountsView(APIView):
     def get(self, request):
