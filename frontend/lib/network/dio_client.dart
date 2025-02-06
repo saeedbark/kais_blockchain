@@ -26,7 +26,6 @@ class DioHelper {
       return await _dio.get(
         endpoint,
         queryParameters: queryParameters,
-   
       );
     } on DioException catch (e) {
       _handleException(e);
@@ -34,7 +33,10 @@ class DioHelper {
     }
   }
 
-  Future<Response?> post(String endpoint, {Map<String, dynamic>? data}) async {
+  Future<Response?> post(
+    String endpoint, {
+    Map<String, dynamic>? data,
+  }) async {
     try {
       return await _dio.post(endpoint, data: data);
     } on DioException catch (e) {

@@ -108,7 +108,6 @@ class _DashboardDetailsView extends StatelessWidget {
   }
 }
 
-/// Widget displaying account details with a circular progress indicator
 class AccountCard extends StatelessWidget {
   final Map<String, dynamic> data;
 
