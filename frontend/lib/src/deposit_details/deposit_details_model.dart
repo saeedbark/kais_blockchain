@@ -1,4 +1,3 @@
-// lib/models/transaction_model.dart
 class TransactionModel {
   final String txHash;
   final String sender;

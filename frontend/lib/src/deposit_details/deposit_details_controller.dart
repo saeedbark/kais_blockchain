@@ -12,7 +12,6 @@ class DepositDetailsController extends ChangeNotifier {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
 
-// lib/controllers/deposit_details_controller.dart
 
   List<TransactionModel> transactions = [];
   bool isLoading = false;

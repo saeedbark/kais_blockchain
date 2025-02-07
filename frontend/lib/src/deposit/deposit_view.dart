@@ -59,7 +59,6 @@ class _DespoistBody extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              // Deposit Button
               InkWell(
                 onTap: controller.deposit,
                 child: Container(
