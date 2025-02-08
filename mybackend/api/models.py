@@ -1,4 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    eth_address = models.CharField(max_length=42, unique=True)
+    balance = models.DecimalField(max_digits=20, decimal_places=10, default=0)
 
 class Account(models.Model):
     address = models.CharField(max_length=42, unique=True)  # Ethereum address
