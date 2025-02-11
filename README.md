@@ -76,4 +76,3 @@ The primary goal is to combine traditional fundraising practices with cutting-ed
 
 ---
 
-Let me know if you’d like additional details or edits!
