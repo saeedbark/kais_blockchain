@@ -1,8 +1,4 @@
-// lib/src/login/login_view.dart
-
 import 'package:flutter/material.dart';
-import 'package:frontend/src/dashboard/dashboard_view.dart';
-import 'package:frontend/src/login/login_controller.dart';
 import 'package:frontend/src/login/login_view.dart';
 import 'package:frontend/src/register/register_controller.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +12,8 @@ class RegisterView extends StatelessWidget {
   RegisterView({Key? key}) : super(key: key);
 
   void _submit(BuildContext context) async {
-    final loginController =
-        Provider.of<LoginController>(context, listen: false);
+    final registerController =
+        Provider.of<RegisterController>(context, listen: false);
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -28,15 +24,15 @@ class RegisterView extends StatelessWidget {
       return;
     }
 
-    final user = await loginController.login(username, password);
+    final user = await registerController.register(username, password);
 
     if (user != null) {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => LoginView()),
       );
     } else {
-      final errorMessage = loginController.errorMessage ?? 'Login failed';
+      final errorMessage = registerController.errorMessage ?? 'Login failed';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );
@@ -98,7 +94,7 @@ class RegisterView extends StatelessWidget {
                                 valueColor:
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               )
-                            : Text('Login'),
+                            : Text('Register'),
                       ),
                     ),
 
