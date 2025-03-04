@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/constent/my_string.dart';
 import 'package:frontend/src/otp/otp_controller.dart';
 import 'package:frontend/src/widget/validation.dart';
 import 'package:pinput/pinput.dart';
@@ -9,172 +10,290 @@ class OtpView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<OtpController>();
+    return ChangeNotifierProvider(
+      create: (_) => OtpController(),
+      child: const _OtpScaffold(), // Use a separate widget for the scaffold
+    );
+  }
+}
 
-    // Themes and Styles
-    const focusedBorderColor = Color.fromRGBO(23, 171, 144, 1);
-    const fillColor = Color.fromRGBO(243, 246, 249, 0);
-    const borderColor = Color.fromRGBO(23, 171, 144, 0.4);
+class _OtpScaffold extends StatelessWidget {
+  const _OtpScaffold();
 
-    final defaultPinTheme = PinTheme(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.primary, AppColors.secondary],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const _AppBar(),
+                  const SizedBox(height: 100),
+                  Consumer<OtpController>(
+                    builder: (context, controller, _) {
+                      final pinTheme = _buildPinTheme();
+                      return AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: controller.isOtpSent
+                            ? _OtpVerification(
+                                controller: controller, pinTheme: pinTheme)
+                            : const _PhoneInput(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  PinTheme _buildPinTheme() {
+    return PinTheme(
       width: 56,
       height: 56,
       textStyle: const TextStyle(
-        fontSize: 22,
-        color: Color.fromRGBO(30, 60, 87, 1),
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(19),
-        border: Border.all(color: borderColor),
-      ),
-    );
-
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'OTP Authentication',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: controller.isOtpSent
-                ? _buildOtpVerification(context, controller, defaultPinTheme,
-                    fillColor, focusedBorderColor)
-                : _buildPhoneInput(context, controller),
-          ),
-        ),
+        color: Colors.white,
+        border: Border.all(color: AppColors.textSecondary.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(12),
       ),
     );
   }
+}
 
-  // Build Phone Number Input
-  Widget _buildPhoneInput(BuildContext context, OtpController controller) {
-    return Form(
-      key: controller.phoneFormKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'Enter Your Phone Number',
+class _AppBar extends StatelessWidget {
+  const _AppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        const Expanded(
+          child: Text(
+            'OTP Verification',
             style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepOrange),
-          ),
-          const SizedBox(height: 30),
-          TextFormField(
-            controller: controller.phoneController,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.grey.shade200,
-              prefixIcon: const Icon(Icons.phone, color: Colors.deepOrange),
-              hintText: 'Phone Number',
-              hintStyle: const TextStyle(color: Colors.grey),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
-            validator: (value) =>
-                ValidationUtils.validateMauritaniaPhoneNumber(value ?? ''),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: controller.isLoading ? null : () => controller.sendOtp,
-              child: controller.isLoading
-                  ? Text('Sending OTP...')
-                  : Text('Send OTP'),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
+}
 
-  // Build OTP Verification
-  Widget _buildOtpVerification(BuildContext context, OtpController controller,
-      PinTheme defaultPinTheme, Color fillColor, Color focusedBorderColor) {
-    return Form(
-      key: controller.otpFormKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'Enter OTP',
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepOrange),
-          ),
-          const SizedBox(height: 30),
-          Pinput(
-            controller: controller.otpController,
-            focusNode: controller.focusNode,
-            defaultPinTheme: defaultPinTheme,
-            length: 6,
-            separatorBuilder: (index) => const SizedBox(width: 8),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) return 'Enter the OTP';
-              if (value.trim().length != 6) return 'OTP must be 6 digits';
-              return null;
-            },
-            hapticFeedbackType: HapticFeedbackType.lightImpact,
-            onCompleted: (pin) => controller.verifyOtp(context),
-            onSubmitted: (pin) => controller.verifyOtp(context),
-            cursor: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(bottom: 9),
-                  width: 22,
-                  height: 1,
-                  color: focusedBorderColor,
+class _PhoneInput extends StatelessWidget {
+  const _PhoneInput();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = context.watch<OtpController>();
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Form(
+          key: controller.phoneFormKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            children: [
+              const Icon(Icons.phone_iphone,
+                  size: 64, color: AppColors.primary),
+              const SizedBox(height: 24),
+              const Text(
+                'Enter Your Phone Number',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
-              ],
-            ),
-            focusedPinTheme: defaultPinTheme.copyWith(
-              decoration: defaultPinTheme.decoration!.copyWith(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: focusedBorderColor),
               ),
-            ),
-            submittedPinTheme: defaultPinTheme.copyWith(
-              decoration: defaultPinTheme.decoration!.copyWith(
-                color: fillColor,
-                borderRadius: BorderRadius.circular(19),
-                border: Border.all(color: focusedBorderColor),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: controller.phoneController,
+                keyboardType: TextInputType.phone,
+                style: const TextStyle(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  prefixIcon:
+                      const Icon(Icons.phone, color: AppColors.textSecondary),
+                  hintText: 'Example: +230 123 4567',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  errorStyle: const TextStyle(color: AppColors.error),
+                ),
+                validator: (value) =>
+                    ValidationUtils.validateMauritaniaPhoneNumber(value ?? ''),
               ),
-            ),
-            errorPinTheme: defaultPinTheme.copyWith(
-              decoration: defaultPinTheme.decoration!.copyWith(
-                border: Border.all(color: Colors.redAccent),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                  ),
+                  onPressed:
+                      controller.isLoading ? null : () => controller.sendOtp(),
+                  child: controller.isLoading
+                      ? const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                        )
+                      : const Text(
+                          'SEND OTP',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.1,
+                          ),
+                        ),
+                ),
               ),
-            ),
+            ],
           ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: controller.isLoading
-                  ? null
-                  : () => controller.verifyOtp(context),
-              child: controller.isLoading
-                  ? Text('Verifying OTP...')
-                  : Text('Verify OTP'),
-            ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OtpVerification extends StatelessWidget {
+  final OtpController controller;
+  final PinTheme pinTheme;
+
+  const _OtpVerification({
+    required this.controller,
+    required this.pinTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Form(
+          key: controller.otpFormKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            children: [
+              const Icon(Icons.verified_user,
+                  size: 64, color: AppColors.primary),
+              const SizedBox(height: 24),
+              const Text(
+                'Enter Verification Code',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Sent to ${controller.phoneController.text}',
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 32),
+              Pinput(
+                controller: controller.otpController,
+                focusNode: controller.focusNode,
+                length: 6,
+                defaultPinTheme: pinTheme,
+                focusedPinTheme: pinTheme.copyWith(
+                  decoration: pinTheme.decoration!.copyWith(
+                    border: Border.all(color: AppColors.primary, width: 2),
+                  ),
+                ),
+                errorPinTheme: pinTheme.copyWith(
+                  decoration: pinTheme.decoration!.copyWith(
+                    border: Border.all(color: AppColors.error),
+                  ),
+                ),
+                validator: (value) {
+                  if (value?.length != 6) return 'Please enter 6-digit code';
+                  return null;
+                },
+                onCompleted: (pin) => controller.verifyOtp(context),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    elevation: 4,
+                  ),
+                  onPressed: controller.isLoading
+                      ? null
+                      : () => controller.verifyOtp(context),
+                  child: controller.isLoading
+                      ? const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                        )
+                      : const Text(
+                          'VERIFY OTP',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.1,
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: controller.isLoading
+                    ? null
+                    : () {
+                        controller.resetState();
+                      },
+                child: const Text(
+                  'Change Phone Number',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

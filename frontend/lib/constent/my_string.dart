@@ -8,16 +8,14 @@ import 'package:flutter/material.dart';
 
 class AppColors {
 
-    static const Color primary = Colors.blue;
-
-
-  static const Color seconde =   Color.fromARGB(255, 188, 218, 241);
-
-  static const Color accent = Color.fromARGB(255, 204, 223, 238);
-
-  static const Color greenAccent = Color(0xffddfad7);
-
-  static const Color redAccent = Color(0xfffadbd7);
+  static const Color primary = Color(0xFF2962FF);
+  static const Color secondary = Color(0xFF448AFF);
+  static const Color accent = Color(0xFF82B1FF);
+  static const Color background = Color(0xFFF5F5F5);
+  static const Color success = Color(0xFF00C853);
+  static const Color error = Color(0xFFD50000);
+  static const Color textPrimary = Color(0xFF212121);
+  static const Color textSecondary = Color(0xFF757575);
 }
 
 String validationEmail =

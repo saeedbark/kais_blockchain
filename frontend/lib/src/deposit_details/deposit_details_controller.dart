@@ -12,7 +12,6 @@ class DepositDetailsController extends ChangeNotifier {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
 
-
   List<TransactionModel> transactions = [];
   bool isLoading = false;
   String? errorMessage;

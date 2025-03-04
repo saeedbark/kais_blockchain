@@ -36,15 +36,15 @@ class DioHelper {
   Future<Response?> post(
     String endpoint, {
     Map<String, dynamic>? data,
-    //Map<String, dynamic>? headers,
+    Map<String, dynamic>? headers,
   }) async {
     try {
       return await _dio.post(
         endpoint,
         data: data,
-        // options: Options(
-        //   headers: headers,
-        // )
+        options: Options(
+          headers: headers,
+        )
       );
     } on DioException catch (e) {
       _handleException(e);

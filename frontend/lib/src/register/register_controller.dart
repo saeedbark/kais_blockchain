@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/login/login_model.dart';
-import 'package:frontend/src/login/login_view.dart';
 import 'package:frontend/src/register/register_service.dart';
 
 class RegisterController extends ChangeNotifier {

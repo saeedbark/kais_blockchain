@@ -38,7 +38,7 @@ class DashboardView extends StatelessWidget {
             ),
           ),
         ],
-        backgroundColor: AppColors.seconde,
+        backgroundColor: AppColors.secondary,
         elevation: 2,
       ),
       body: controller.isLoading

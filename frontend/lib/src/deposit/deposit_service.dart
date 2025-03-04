@@ -1,13 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:frontend/network/api_path.dart';
 import 'package:frontend/network/dio_client.dart';
 
 class DepositService {
-  Future<void> deposit({
+  Future<dynamic> deposit({
     required String sender,
     required String recipient,
     required double amount,
   }) async {
-    await DioHelper().post(
+    final response = await DioHelper().post(
       ApiPath.deposit,
       data: {
         'sender': sender,
@@ -15,5 +16,6 @@ class DepositService {
         'amount': amount,
       },
     );
+    return response;
   }
 }

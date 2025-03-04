@@ -8,10 +8,10 @@ class OtpService {
         'phone': phoneNumber,
         'lang': 'fr',
       },
-      // headers: {
-      //   'Validation-token': 'XFcKDVEzjkqiD1JTA2fnHDKn3Y5wzWib',
-      //   'Content-Type': 'application/json',
-      // }
+      headers: {
+        'Validation-token': 'XFcKDVEzjkqiD1JTA2fnHDKn3Y5wzWib',
+        'Content-Type': 'application/json',
+      }
     );
 
     if (response == null) return {};
