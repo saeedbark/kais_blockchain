@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/dashboard/dashboard_service.dart';
 import 'package:frontend/src/deposit/deposit_service.dart';
+import 'package:frontend/src/deposit_details/deposit_details_view.dart';
 
 class DepositController extends ChangeNotifier {
   final String address;
@@ -26,17 +27,21 @@ class DepositController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deposit() async {
+  Future<void> deposit(BuildContext context) async {
     isLoading = true;
 
-    await DepositService().deposit(
+    final response = await DepositService().deposit(
       sender: address,
       recipient: addressadmin,
-      amount:double.tryParse( amountController.text)?? 2,
+      amount: double.tryParse(amountController.text) ?? 2,
     );
 
     isLoading = false;
 
+    Navigator.pop(context);
+
     notifyListeners();
+
+    return response;
   }
 }

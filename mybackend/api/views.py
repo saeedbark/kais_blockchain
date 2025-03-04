@@ -100,7 +100,7 @@ class TransferView(APIView):
             # Transfer amount using Web3
             tx_hash = transfer_amount(sender, recipient, amount)
             
-            print('tx_hasg'+tx_hash)
+            print('tx_hasg'+web3.to_hex(tx_hash))
 
             # Fetch transaction details from the blockchain using the web3 instance
             tx_details = web3.eth.get_transaction(tx_hash)
@@ -114,7 +114,7 @@ class TransferView(APIView):
                 sender=sender,
                 recipient=recipient,
                 amount=amount,
-                tx_hash=tx_hash,
+                tx_hash=web3.to_hex(tx_hash),
                 block_number=tx_receipt.blockNumber,
                 timestamp=timestamp
             )

@@ -10,8 +10,9 @@ class DepositView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (context) => DepositController(address: address),
-        child: _DespoistBody(),);
+      create: (context) => DepositController(address: address),
+      child: _DespoistBody(),
+    );
   }
 }
 
@@ -25,7 +26,7 @@ class _DespoistBody extends StatelessWidget {
       backgroundColor: AppColors.accent,
       appBar: AppBar(
         title: const Text('Deposit'),
-        backgroundColor: AppColors.seconde,
+        backgroundColor: AppColors.secondary,
       ),
       body: Container(
         margin: const EdgeInsets.all(16).copyWith(top: 80),
@@ -35,7 +36,6 @@ class _DespoistBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 80),
-          
               TextFormField(
                 controller: controller.amountController,
                 decoration: InputDecoration(
@@ -51,7 +51,6 @@ class _DespoistBody extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: AppColors.primary, width: 2),
                   ),
-                  
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
@@ -60,7 +59,7 @@ class _DespoistBody extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               InkWell(
-                onTap: controller.deposit,
+                onTap:()=> controller.deposit(context),
                 child: Container(
                   height: 50,
                   decoration: BoxDecoration(

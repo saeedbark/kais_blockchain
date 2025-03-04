@@ -28,7 +28,7 @@ class DepositDetailsView extends StatelessWidget {
         backgroundColor: AppColors.accent,
         appBar: AppBar(
           title: const Text('Deposit Details'),
-          backgroundColor: AppColors.seconde,
+          backgroundColor: AppColors.secondary,
           shadowColor: AppColors.primary,
           elevation: 2,
         ),
