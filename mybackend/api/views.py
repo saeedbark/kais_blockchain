@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from .models import Account, Transaction
 from django.contrib.auth import authenticate
+
 from rest_framework.authtoken.models import Token
 from .serializers import AccountSerializer, TransactionSerializer,UserProfile,UserSerializer
 from .web3_client import get_all_accounts_with_balances, transfer_amount,get_transactions_for_account,web3
@@ -86,6 +87,8 @@ class TransferView(APIView):
             sender = request.data.get('sender')
             recipient = request.data.get('recipient')
             amount = float(request.data.get('amount'))  # Convert to float for decimals
+            private_key = request.data.get('private_key')
+
 
             # Validate input
             if not sender or not recipient or amount <= 0:
@@ -98,7 +101,7 @@ class TransferView(APIView):
                 return Response({"error": "Invalid recipient address"}, status=400)
 
             # Transfer amount using Web3
-            tx_hash = transfer_amount(sender, recipient, amount)
+            tx_hash = transfer_amount(sender, recipient, amount,private_key)
             
             print('tx_hasg'+web3.to_hex(tx_hash))
 
@@ -136,7 +139,6 @@ class TransactionListView(APIView):
             # Save transactions to the database if they don't exist
             for tx in transactions:
                 if not Transaction.objects.filter(tx_hash=tx['hash']).exists():
-                    # Convert timestamp to datetime
                     tx_timestamp = datetime.datetime.fromtimestamp(tx['timestamp'], tz=datetime.timezone.utc)
                     Transaction.objects.create(
                         sender=tx['from'],
@@ -151,7 +153,34 @@ class TransactionListView(APIView):
             transactions_db = Transaction.objects.filter(sender=address) | Transaction.objects.filter(recipient=address)
             transactions_db = transactions_db.order_by('-timestamp')
             serializer = TransactionSerializer(transactions_db, many=True)
-            return Response({"transactions": serializer.data}, status=200)
+            data = serializer.data
 
+            # Check each transaction against the blockchain
+            for index, tx_data in enumerate(data):
+                tx_obj = transactions_db[index]
+                is_tampered = False
+                try:
+                    # Fetch transaction from blockchain using stored hash
+                    blockchain_tx = web3.eth.get_transaction(tx_obj.tx_hash)
+                    if not blockchain_tx:
+                        is_tampered = True
+                    else:
+                        # Compare relevant fields
+                        db_sender = tx_obj.sender.lower()
+                        bc_sender = blockchain_tx['from'].lower()
+                        db_recipient = tx_obj.recipient.lower()
+                        bc_recipient = blockchain_tx['to'].lower() if blockchain_tx['to'] else None
+                        db_amount = float(tx_obj.amount)
+                        bc_amount = float(web3.from_wei(blockchain_tx['value'], 'ether'))
+
+                        if (db_sender != bc_sender or 
+                            db_recipient != bc_recipient or 
+                            abs(db_amount - bc_amount) > 1e-9):
+                            is_tampered = True
+                except:
+                    is_tampered = True
+                tx_data['is_tampered'] = is_tampered
+
+            return Response({"transactions": data}, status=200)
         except Exception as e:
             return Response({"error": str(e)}, status=500)

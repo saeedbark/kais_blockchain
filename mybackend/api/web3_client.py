@@ -44,7 +44,7 @@ def get_all_accounts_with_balances():
 
 
 # Function to transfer funds between two accounts
-def transfer_amount(sender, recipient, amount):
+def transfer_amount(sender, recipient, amount,private_key):
     """Transfer funds between two accounts."""
     sender_account = web3.to_checksum_address(sender)
     
@@ -64,7 +64,6 @@ def transfer_amount(sender, recipient, amount):
     
     print(funding_amount)
     
-    private_key =  '0x2f568cd40f0a958214b3732d68499bf76d9b78d158fb2d9f9789ad091b3ee049'
     print('private_key', private_key)
 
     

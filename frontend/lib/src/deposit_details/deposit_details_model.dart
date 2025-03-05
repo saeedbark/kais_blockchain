@@ -5,6 +5,7 @@ class TransactionModel {
   final double amount;
   final int blockNumber;
   final DateTime timestamp;
+  final bool isTampered;
 
   TransactionModel({
     required this.txHash,
@@ -13,6 +14,7 @@ class TransactionModel {
     required this.amount,
     required this.blockNumber,
     required this.timestamp,
+    required this.isTampered,
   });
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class TransactionModel {
       amount: double.tryParse(json['amount']) ?? 0.0,
       blockNumber: json['block_number'],
       timestamp: DateTime.parse(json['timestamp']),
+      isTampered: json['is_tampered'] ?? false,
     );
   }
 }

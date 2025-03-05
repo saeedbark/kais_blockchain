@@ -6,7 +6,7 @@ class DioHelper {
   final Dio _dio = Dio();
 
   DioHelper() {
-    _dio.options.baseUrl = "http://192.168.100.45:8000/api/";
+    _dio.options.baseUrl = "http://192.168.100.49:8000/api/";
     _dio.interceptors.add(
       TalkerDioLogger(
         settings: const TalkerDioLoggerSettings(
@@ -39,13 +39,11 @@ class DioHelper {
     Map<String, dynamic>? headers,
   }) async {
     try {
-      return await _dio.post(
-        endpoint,
-        data: data,
-        options: Options(
-          headers: headers,
-        )
-      );
+      return await _dio.post(endpoint,
+          data: data,
+          options: Options(
+            headers: headers,
+          ));
     } on DioException catch (e) {
       _handleException(e);
       return null;

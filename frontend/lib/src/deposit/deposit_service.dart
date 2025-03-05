@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:frontend/network/api_path.dart';
 import 'package:frontend/network/dio_client.dart';
 
@@ -7,6 +6,7 @@ class DepositService {
     required String sender,
     required String recipient,
     required double amount,
+    required String privateKey,
   }) async {
     final response = await DioHelper().post(
       ApiPath.deposit,
@@ -14,6 +14,7 @@ class DepositService {
         'sender': sender,
         'recipient': recipient,
         'amount': amount,
+        'private_key': privateKey
       },
     );
     return response;

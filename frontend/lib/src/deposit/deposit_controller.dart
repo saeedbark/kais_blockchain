@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/dashboard/dashboard_service.dart';
 import 'package:frontend/src/deposit/deposit_service.dart';
-import 'package:frontend/src/deposit_details/deposit_details_view.dart';
 
 class DepositController extends ChangeNotifier {
   final String address;
@@ -9,6 +8,7 @@ class DepositController extends ChangeNotifier {
     getAccount();
   }
   final TextEditingController amountController = TextEditingController();
+  final TextEditingController privateKeyController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
@@ -27,21 +27,29 @@ class DepositController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deposit(BuildContext context) async {
+  Future<bool> deposit(BuildContext context) async {
     isLoading = true;
+    notifyListeners(); // CORRECTED METHOD NAME
 
-    final response = await DepositService().deposit(
-      sender: address,
-      recipient: addressadmin,
-      amount: double.tryParse(amountController.text) ?? 2,
-    );
+    try {
+      await DepositService().deposit(
+        sender: address,
+        recipient: addressadmin,
+        amount: double.tryParse(amountController.text) ?? 2,
+        privateKey: privateKeyController.text,
+      );
 
-    isLoading = false;
-
-    Navigator.pop(context);
-
-    notifyListeners();
-
-    return response;
+      isLoading = false;
+      Navigator.pop(context, true); // Pass true indicating success
+      notifyListeners();
+      return true;
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Deposit failed: ${e.toString()}')),
+      );
+      return false;
+    }
   }
 }
