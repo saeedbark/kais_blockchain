@@ -25,17 +25,30 @@ class DepositDetailsController extends ChangeNotifier {
       final response = await DepositDetailsService().getTransactions(address);
       if (response['transactions'] != null) {
         final data = response['transactions'] as List<dynamic>;
-        transactions =
+
+        // Parse all transactions
+        final allTransactions =
             data.map((json) => TransactionModel.fromJson(json)).toList();
-        print('object');
+
+        // Remove duplicates - keep earliest transaction per unique identifier
+        final uniqueTransactions = <String, TransactionModel>{};
+        for (final transaction in allTransactions) {
+          final key =
+              '${transaction.amount}-${transaction.timestamp}'; // Adjust key as needed
+          final existing = uniqueTransactions[key];
+
+          if (existing == null ||
+              transaction.timestamp.isBefore(existing.timestamp)) {
+            uniqueTransactions[key] = transaction;
+          }
+        }
+
+        transactions = uniqueTransactions.values.toList();
         return;
       }
     } catch (e) {
-      if (e is AppException) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = 'An unexpected error occurred.';
-      }
+      errorMessage =
+          e is AppException ? e.message : 'An unexpected error occurred.';
     } finally {
       isLoading = false;
       notifyListeners();

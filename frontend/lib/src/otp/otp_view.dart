@@ -23,6 +23,7 @@ class _OtpScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.secondary,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -142,10 +143,9 @@ class _PhoneInput extends StatelessWidget {
                   fillColor: Colors.grey.shade100,
                   prefixIcon:
                       const Icon(Icons.phone, color: AppColors.textSecondary),
-                  hintText: 'Example: +230 123 4567',
+                  hintText: 'Example: +222 41 23 45 67',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
                   ),
                   errorStyle: const TextStyle(color: AppColors.error),
                 ),
@@ -275,6 +275,7 @@ class _OtpVerification extends StatelessWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.1,
+                            color: Colors.white,
                           ),
                         ),
                 ),

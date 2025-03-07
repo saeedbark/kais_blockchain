@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/dashboard/dashboard_view.dart';
 import 'package:frontend/src/otp/otp_view.dart';
 import 'package:frontend/src/register/register_view.dart';
 import '../../shared_pref/shared_preferences.dart';
@@ -77,7 +78,7 @@ class LoginController extends ChangeNotifier {
       if (response.ethAddress.isNotEmpty) {
         await SharedPreferencesHelper.setString('token', response.token);
         await SharedPreferencesHelper.setString('address', response.ethAddress);
-        
+
         if (context.mounted) {
           Navigator.push(
             context,
@@ -94,8 +95,6 @@ class LoginController extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-
 
   @override
   void dispose() {

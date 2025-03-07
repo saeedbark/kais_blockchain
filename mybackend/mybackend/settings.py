@@ -12,6 +12,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+
+GANACHE_URL = os.getenv("GANACHE_URL")
+CONTRACT_ADDRESS = os.getenv("CONTRACT_ADDRESS")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

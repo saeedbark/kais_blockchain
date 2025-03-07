@@ -48,16 +48,7 @@ class _LoginBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 40),
-              const Hero(
-                tag: 'app-logo',
-                child: FlutterLogo(
-                  size: 120,
-                  style: FlutterLogoStyle.horizontal,
-                  textColor: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 100),
               Card(
                 elevation: 8,
                 shape: RoundedRectangleBorder(
@@ -78,7 +69,7 @@ class _LoginBody extends StatelessWidget {
                       const SizedBox(height: 24),
                       _buildTextField(
                         controller: controller.usernameController,
-                        label: 'Username',
+                        label: 'Email',
                         icon: Icons.person_outline,
                         errorText: controller.usernameError,
                       ),

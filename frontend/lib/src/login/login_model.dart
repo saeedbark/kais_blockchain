@@ -14,8 +14,8 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       username: json['username'] ?? '',
-      token: json['token'],
-      ethAddress: json['eth_address'],
+      token: json['token'] ?? '',
+      ethAddress: json['eth_address'] ?? '',
       balance: json['balance']?.toDouble() ?? 0.0,
     );
   }

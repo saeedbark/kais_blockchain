@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:frontend/constent/my_string.dart';
+import 'package:frontend/shared_pref/shared_preferences.dart';
 import 'package:frontend/src/dashboard/dashboard_controller.dart';
 import 'package:frontend/src/deposit_details/deposit_details_view.dart';
+import 'package:frontend/src/login/login_view.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -30,9 +32,99 @@ class DashboardView extends StatelessWidget {
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
+      drawer: _buildDrawer(context, controller),
       body: controller.isLoading
           ? const _LoadingIndicator()
           : const _DashboardDetailsView(),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context, DashboardController controller) {
+    final account =
+        controller.accounts.isNotEmpty ? controller.accounts[0] : null;
+
+    return Drawer(
+      child: Column(
+        children: [
+          UserAccountsDrawerHeader(
+            accountName: Text(account?['name'] ?? 'Guest User',
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            accountEmail: Text(account?['address'] ?? 'user@example.com',
+                style: const TextStyle(fontSize: 14)),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: AppColors.primary,
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: account?['image'] ?? '',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Icon(Icons.person),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
+              ),
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.9),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person, color: AppColors.primary),
+            title: const Text('Profile'),
+            onTap: () {
+              Navigator.pop(context);
+              // Add navigation to profile screen
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings, color: AppColors.primary),
+            title: const Text('Settings'),
+            onTap: () {
+              Navigator.pop(context);
+              // Add navigation to settings screen
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: AppColors.error),
+            title: const Text('Logout'),
+            onTap: () {
+              Navigator.pop(context);
+              _handleLogout(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleLogout(BuildContext context) {
+    // Implement your logout logic here
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await SharedPreferencesHelper.remove('token');
+              await SharedPreferencesHelper.remove('code');
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => LoginView()),
+              );
+            },
+            child:
+                const Text('Logout', style: TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -75,12 +167,13 @@ class _AnimatedDepositButton extends StatelessWidget {
     );
   }
 
-  void _navigateToDeposit(BuildContext context) {
+  void _navigateToDeposit(BuildContext context) async {
+    final address = await SharedPreferencesHelper.getString('address');
     Navigator.push(
       context,
       PageRouteBuilder(
         pageBuilder: (_, __, ___) => DepositDetailsView(
-          address: controller.accounts[0]['address'],
+          address: address,
           isDesposit: true,
           amount: double.tryParse(controller.accounts[0]['balance']) ?? 0.0,
         ),
@@ -119,18 +212,18 @@ class _DashboardDetailsView extends StatelessWidget {
   List<Map<String, dynamic>> _generateAccountData(BuildContext context) {
     final accounts = context.watch<DashboardController>().accounts;
     List<String> names = [
-      "Ahmed salem",
-      "John Doe",
-      "Mary Smith",
+      "Caisse",
+      "Chimchawi Ahmed",
+      "Saeed",
       "Fatima  Abdullah",
       "Ali saeed",
-      "Sara Ali",
+      "moustapha  ",
       "Kareem Amir",
       "Aisha Hassan",
       "Hassan"
     ];
     List<String> images = [
-      "https://st.depositphotos.com/2931363/3703/i/950/depositphotos_37034497-stock-photo-young-black-man-smiling-at.jpg",
+      "https://c0.klipartz.com/pngpicture/103/822/gratis-png-paquete-de-u-s-ilustracion-de-billetes-en-dolares-bolsa-de-dinero-moneda-prestamo-de-moneda-monedero-en-efectivo-thumbnail.png",
       "https://st.depositphotos.com/1743476/2514/i/950/depositphotos_25144755-stock-photo-presenting-your-text.jpg",
       "https://st3.depositphotos.com/12985790/17521/i/1600/depositphotos_175218564-stock-photo-smiling-handsome-man-holding-cup.jpg",
       "https://st5.depositphotos.com/1049680/64158/i/1600/depositphotos_641589546-stock-photo-hispanic-man-standing-blue-background.jpg",
@@ -177,48 +270,51 @@ class AccountCard extends StatelessWidget {
       child: InkWell(
         onTap: () => _navigateToDetails(context),
         borderRadius: BorderRadius.circular(15),
-        child: Card(
-          elevation: 0,
-          color: AppColors.background,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                _UserAvatar(imageUrl: data['image']),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        data['name'],
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+        child: InkWell(
+          onTap: () => _navigateToDetails(context),
+          child: Card(
+            elevation: 0,
+            color: AppColors.background,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  _UserAvatar(imageUrl: data['image']),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data['name'],
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      _AccountInfoRow(
-                        label: 'Address:',
-                        value: data['account'],
-                      ),
-                      const SizedBox(height: 4),
-                      _AccountInfoRow(
-                        label: 'Balance:',
-                        value:
-                            '${double.tryParse(data['amount'])?.toStringAsFixed(2) ?? 0.0} MRU',
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        _AccountInfoRow(
+                          label: 'Address:',
+                          value: data['account'],
+                        ),
+                        const SizedBox(height: 4),
+                        _AccountInfoRow(
+                          label: 'Balance:',
+                          value:
+                              '${double.tryParse(data['amount'])?.toStringAsFixed(2) ?? 0.0} MRU',
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                // _UsagePercentageIndicator(
-                //   percentage: double.tryParse(data['usage_percentage']) ?? 0.0,
-                // ),
-              ],
+                  // _UsagePercentageIndicator(
+                  //   percentage: double.tryParse(data['usage_percentage']) ?? 0.0,
+                  // ),
+                ],
+              ),
             ),
           ),
         ),
@@ -231,6 +327,7 @@ class AccountCard extends StatelessWidget {
       context,
       PageRouteBuilder(
         pageBuilder: (_, __, ___) => DepositDetailsView(
+          address: data['account'],
           amount: double.tryParse(data['amount']) ?? 0.0,
           percentage: double.tryParse(data['usage_percentage']) ?? 0.0,
         ),

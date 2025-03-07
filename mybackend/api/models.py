@@ -20,9 +20,17 @@ class Transaction(models.Model):
     sender = models.CharField(max_length=42)
     recipient = models.CharField(max_length=42)
     amount = models.DecimalField(max_digits=20, decimal_places=10)
-    tx_hash = models.CharField(max_length=66, unique=True)  # Transaction hash
+    tx_hash = models.CharField(max_length=66, unique=True)
     block_number = models.IntegerField()
     timestamp = models.DateTimeField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['sender', 'recipient', 'amount', 'timestamp'],
+                name='unique_transaction'
+            )
+        ]
 
     def __str__(self):
         return f"{self.tx_hash} ({self.amount} ETH)"

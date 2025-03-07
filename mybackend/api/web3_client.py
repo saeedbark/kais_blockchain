@@ -1,9 +1,15 @@
 import json
 from web3 import Web3
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 
 # Connect to Ganache
-ganache_url = "http://127.0.0.1:7545"  # Update if your Ganache URL differs
+ganache_url = os.getenv("GANACHE_URL")
+
 web3 = Web3(Web3.HTTPProvider(ganache_url))
 
 # Check connection
@@ -20,7 +26,7 @@ def load_contract():
     with open(contract_path) as f:
         contract_data = json.load(f)
     abi = contract_data['abi']
-    contract_address = '0xE4Ee669F0425ca1c942FD9D1ac86414c44fe926c'  # Replace with your actual contract address
+    contract_address = os.getenv("CONTRACT_ADDRESS")  # Get from .env
     return web3.eth.contract(address=contract_address, abi=abi)
 
 # Function to fetch all accounts with balances and claculate percentage from Ganache

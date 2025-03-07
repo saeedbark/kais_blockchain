@@ -66,7 +66,6 @@ class _DepositDetailsViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<DepositDetailsController>(context);
-    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -322,14 +321,14 @@ class _TransactionCard extends StatelessWidget {
               'Block #${transaction.blockNumber} • $formattedDate',
               style: TextStyle(
                 fontSize: 12,
-                color: AppColors.textSecondary,
+                //color: c,
               ),
             ),
             Text(
               transaction.txHash,
               style: TextStyle(
                 fontSize: 11,
-                color: AppColors.textSecondary.withOpacity(0.7),
+                // color: AppColors.textSecondary.withOpacity(0.7),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -339,7 +338,7 @@ class _TransactionCard extends StatelessWidget {
           formattedTime,
           style: TextStyle(
             fontSize: 12,
-            color: AppColors.textSecondary,
+            // color: AppColors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),

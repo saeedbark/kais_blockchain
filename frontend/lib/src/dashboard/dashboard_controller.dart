@@ -30,7 +30,7 @@ class DashboardController extends ChangeNotifier {
 
 
 
-  accounts = response['accounts_with_balances'].skip(1).toList();
+  accounts = response['accounts_with_balances'].toList();
 
     notifyListeners();
   }

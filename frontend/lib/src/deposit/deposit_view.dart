@@ -104,7 +104,7 @@ class _AnimatedAmountInput extends StatelessWidget {
               filled: true,
               fillColor: Colors.cyanAccent.withOpacity(0.1),
               prefixIcon: Icon(
-                Icons.currency_exchange_rounded,
+                Icons.price_change_outlined,
                 color: AppColors.primary,
               ),
               border: OutlineInputBorder(
@@ -113,10 +113,6 @@ class _AnimatedAmountInput extends StatelessWidget {
                   color: AppColors.primary,
                   width: 2,
                 ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
